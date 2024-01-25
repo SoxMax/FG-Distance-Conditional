@@ -1,7 +1,6 @@
 local checkConditional
 
 function checkDistance(rActor, nodeEffect, aConditions, rTarget, aIgnore, ...)
-    Debug.chat(rActor, nodeEffect, aConditions, rTarget, aIgnore)
     local bReturn = checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore, ...)
 
 	if bReturn then
