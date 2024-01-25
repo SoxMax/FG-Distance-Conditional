@@ -21,6 +21,6 @@
 		<script name="DistanceConditional" file="scripts/distance_conditional.lua" />
 
 		<!-- Effect Builder -->
-		<!-- <includefile source="effect_builder/editor_loader.xml" /> -->
+		<includefile source="effect_builder/editor_loader.xml" />
 	</base>
 </root>
