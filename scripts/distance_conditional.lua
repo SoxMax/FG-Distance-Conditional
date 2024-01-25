@@ -2,45 +2,42 @@ local checkConditional
 
 function checkDistance(rActor, nodeEffect, aConditions, rTarget, aIgnore, ...)
     Debug.chat(rActor, nodeEffect, aConditions, rTarget, aIgnore)
-    local isntConditional = checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore, ...)
+    local bReturn = checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore, ...)
 
-    for _,v in ipairs(aConditions) do
-		local sLower = v:lower();
-        local distanceCheck = sLower:match("^distance%s*%(([^)]+)%)$");
-        if distanceCheck then
-            if rTarget then
-                local sourceToken = CombatManager.getTokenFromCT(rActor.sCTNode)
-                local targetToken = CombatManager.getTokenFromCT(rTarget.sCTNode)
-                
-                Debug.chat(sourceToken, targetToken)
-                local distance
-                if sourceToken and targetToken then
-                    
-                    distance = Token.getDistanceBetween(sourceToken, targetToken)
-                end
-                Debug.chat(distance)
-            end
-        end
-    end
+	if bReturn then
+		for _,v in ipairs(aConditions) do
+			local sLower = v:lower();
+			local distanceCheck = sLower:match("^distance%s*%(([^)]+)%)$");
+			if distanceCheck then
+				if not isTargetDistance(rActor, rTarget, distanceCheck) then
+					bReturn = false
+					break;
+				end
+			end
+		end
+	end
+	return bReturn
 end
 
-function isCreatureSizeDnD3(rActor, sParam)
-	if not DataCommon.creaturesize then
-		return false;
-	end
+function isTargetDistance(rActor, rTarget, sParam)
+    if not rTarget then
+        return false
+    end
 
-	local tParamSize = ActorCommonManager.internalIsCreatureSizeDnDParam(sParam);
-	if not tParamSize then
-		return false;
+	local tParamDistance = parseDistanceParam(sParam)
+	if not tParamDistance then
+		return false
 	end
 	
-	local nActorSize = ActorCommonManager.getCreatureSizeDnD3(rActor);
+	local nDistance = getDistanceBetween(rActor, rTarget)
+	if not nDistance then
+		return false
+	end
 
-	return ActorCommonManager.internalIsCreatureSizeDnDCompare(tParamSize, nActorSize);
+	return ActorCommonManager.compareDistance(tParamDistance, nDistance)
 end
 
-function internalIsCreatureSizeDnDParam(sParam)
-	Debug.chat(sParam)
+function parseDistanceParam(sParam)
 	local tParams = StringManager.splitByPattern(sParam:lower(), ",", true);
 
 	local tParamSize = {};
@@ -50,35 +47,53 @@ function internalIsCreatureSizeDnDParam(sParam)
 		if sParamOp then
 			sParamCompLower = StringManager.trim(sParamCompLower:sub(#sParamOp + 1));
 		end
-		local nParamSize = DataCommon.creaturesize[sParamCompLower];
-		if nParamSize then
-			table.insert(tParamSize, { nParamSize = nParamSize, sParamOp = sParamOp });
+		local nParamDistance = tonumber(sParamCompLower);
+		if nParamDistance then
+			table.insert(tParamSize, { nParamDistance = nParamDistance, sParamOp = sParamOp });
 		end
 	end
-	Debug.chat(tParamSize)
 	if #tParamSize == 0 then
 		return nil;
 	end
 	return tParamSize;
 end
 
-function internalIsCreatureSizeDnDCompare(tParamSize, nActorSize)
-	for _,t in ipairs(tParamSize) do
+function getDistanceBetween(source, target)
+    local sourceToken, targetToken = getToken(source), getToken(target)
+	if sourceToken and targetToken then
+		return Token.getDistanceBetween(sourceToken, targetToken)
+	end
+	return nil
+end
+
+function getToken(item)
+    local token = item
+    if type(token) == "table" then
+        token = token.sCTNode
+    end
+    if type(token) == "string" then
+        token = CombatManager.getTokenFromCT(token)
+    end
+    return token
+end
+
+function compareDistance(tParamDistance, nDistance)
+	for _,t in ipairs(tParamDistance) do
 		local bReturn;
 		if t.sParamOp then
 			if t.sParamOp == "<" then
-				bReturn = (nActorSize < t.nParamSize);
+				bReturn = (nDistance < t.nParamDistance);
 			elseif t.sParamOp == ">" then
-				bReturn = (nActorSize > t.nParamSize);
+				bReturn = (nDistance > t.nParamDistance);
 			elseif t.sParamOp == "<=" then
-				bReturn = (nActorSize <= t.nParamSize);
+				bReturn = (nDistance <= t.nParamDistance);
 			elseif t.sParamOp == ">=" then
-				bReturn = (nActorSize >= t.nParamSize);
+				bReturn = (nDistance >= t.nParamDistance);
 			else
-				bReturn = (nActorSize == t.nParamSize);
+				bReturn = (nDistance == t.nParamDistance);
 			end
 		else
-			bReturn = (nActorSize == t.nParamSize);
+			bReturn = (nDistance == t.nParamDistance);
 		end
 		if bReturn then
 			return true;
