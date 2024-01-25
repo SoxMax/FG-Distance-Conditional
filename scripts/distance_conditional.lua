@@ -34,7 +34,7 @@ function isTargetDistance(rActor, rTarget, sParam)
 		return false
 	end
 
-	return ActorCommonManager.compareDistance(tParamDistance, nDistance)
+	return compareDistance(tParamDistance, nDistance)
 end
 
 function parseDistanceParam(sParam)
