@@ -102,6 +102,12 @@ function compareDistance(tParamDistance, nDistance)
 end
 
 function onInit()
-    checkConditional = EffectManager35E.checkConditional
-    EffectManager35E.checkConditional = checkDistance
+	Debug.chat("Distance Conditional extension is deprecated. Please use Kelrugem's Extended Automation extension instead.")
+    -- Check if Kelrugem's extension is loaded
+    if EffectManager35E.checkRangeConditional then
+		Debug.chat("Extended Automation detected. Skipping Distance Conditional.")
+	else
+		checkConditional = EffectManager35E.checkConditional
+		EffectManager35E.checkConditional = checkDistance
+	end
 end
