@@ -102,11 +102,20 @@ function compareDistance(tParamDistance, nDistance)
 end
 
 function onInit()
-	Debug.chat("Distance Conditional extension is deprecated. Please use Kelrugem's Extended Automation extension instead.")
+	local function openForgeLink(sButtonPressed)
+		if sButtonPressed == "ok" then
+			Interface.openWindow("url", "https://forge.fantasygrounds.com/shop/items/1/view")
+		end
+	end
+
+	Interface.dialogMessage(openForgeLink, "Distance Conditional extension is deprecated. Please use Kelrugem's Extended Automation extension instead.\n"
+	.. "Distance Conditional extension will be removed in the future.\n"
+	.. "https://forge.fantasygrounds.com/shop/items/1/view", "Deprecation Warning", "okcancel")
     -- Check if Kelrugem's extension is loaded
     if EffectManager35E.checkRangeConditional then
-		Debug.chat("Extended Automation detected. Skipping Distance Conditional.")
+		Debug.console("Extended Automation detected. Skipping Distance Conditional.")
 	else
+		Debug.console("Extended Automation not detected. Loading Distance Conditional.")
 		checkConditional = EffectManager35E.checkConditional
 		EffectManager35E.checkConditional = checkDistance
 	end
