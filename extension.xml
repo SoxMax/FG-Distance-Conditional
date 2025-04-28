@@ -2,7 +2,7 @@
 <root version="3.3">
 	<properties>
 		<name>Feature: Distance Conditional</name>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 		<author>SoxMax</author>
 		<description>Adds a new conditional in 3.5e/PFRPG for checking the distance between tokens</description>
 		<loadorder>402</loadorder>
